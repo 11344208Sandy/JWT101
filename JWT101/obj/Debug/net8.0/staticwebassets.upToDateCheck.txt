@@ -1,3 +1,0 @@
-wwwroot\APICaller.html
-wwwroot\MessageBoard.html
-wwwroot\Login.html
