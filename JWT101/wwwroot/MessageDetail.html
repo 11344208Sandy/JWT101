@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>留言詳情</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f9; padding: 40px; }
+        .detail-card { 
+            max-width: 700px; margin: 0 auto; background: white; 
+            padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
+        }
+        h1 { color: #0078d4; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .meta { color: #666; margin-bottom: 30px; font-size: 0.9em; }
+        .content { font-size: 1.2em; line-height: 1.8; white-space: pre-wrap; color: #333; }
+        .btn-back { 
+            display: inline-block; margin-top: 30px; padding: 10px 20px; 
+            background: #0078d4; color: white; text-decoration: none; border-radius: 5px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="detail-card">
+        <h1 id="subject"></h1>
+        <div class="meta">
+            發表者：<span id="user"></span> |
+            時間：<span id="date"></span>
+        </div>
+        <div id="content" class="content"></div>
+        <a href="MessageBoard.html" class="btn-back">← 返回留言板</a>
+    </div>
+
+    <script>
+        // 從快取拿資料
+        const rawData = localStorage.getItem('currentViewMessage');
+        if (rawData) {
+            const m = JSON.parse(rawData); // 將字串解析回物件
+            // 將資料填入對應的 HTML 標籤
+            document.getElementById('subject').innerText = m.subject || m.Subject;
+            document.getElementById('user').innerText = m.userID || m.UserID || '匿名';
+            document.getElementById('date').innerText = new Date(m.p_Date || m.p_date).toLocaleString();
+            document.getElementById('content').innerText = m.content || m.Content;
+        } else {
+            // 將字串解析回物件
+            alert('找不到資料！');
+            window.location.href = 'MessageBoard.html';
+        }
+    </script>
+</body>
+</html>

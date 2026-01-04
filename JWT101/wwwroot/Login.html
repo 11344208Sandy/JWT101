@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metro 登入</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 登入外框容器 (Metro 風格) */
+        .login-container {
+            background: white;
+            width: 400px;
+            padding: 0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        /* 藍色標題區塊 */
+        .login-header {
+            background: #0078d4;
+            padding: 40px 30px;
+            color: white;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 5px;
+        }
+
+        .login-header p {
+            font-size: 14px;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        .login-body {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            font-size: 15px;
+            font-family: 'Segoe UI', sans-serif;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #0078d4;
+        }
+
+        .form-group input::placeholder {
+            color: #999;
+            font-weight: 300;
+        }
+
+        .form-actions {
+            margin-top: 30px;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: #0078d4;
+            color: white;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .btn-login:hover {
+            background: #005a9e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 120, 212, 0.3);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .form-footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .form-footer a {
+            color: #0078d4;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .remember-me label {
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            margin: 0;
+            text-transform: none;
+            letter-spacing: normal;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1 id="formTitle">歡迎回來</h1>
+            <p id="toggleText">請登入您的帳戶</p>
+        </div>
+        <div class="login-body">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">使用者名稱</label>
+                    <input type="text"
+                           id="username"
+                           name="username"
+                           placeholder="輸入您的使用者名稱"
+                           required>
+                </div>
+                <div class="form-group">
+                    <label for="password">密碼</label>
+                    <input type="password"
+                           id="password"
+                           name="password"
+                           placeholder="輸入您的密碼"
+                           required>
+                </div>
+                <div class="form-group" id="emailGroup">
+                    <label for="Email">Email</label>
+                    <input type="email" 
+                           id="email" 
+                           placeholder="請輸入Email"
+                           required>
+                </div>
+
+                
+
+                <div class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">記住我</label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="submitBtn" class="btn-login" onclick="handleSubmit(event)">登入</button>
+                    <p style="text-align:center; margin-top:15px;">
+                        <a href="javascript:void(0)" id="switchLink" onclick="toggleMode(event)" style="color:#0078d4; text-decoration:none;">點我註冊</a>
+                    </p>
+                </div>
+                <div class="form-footer">
+                    <a href="#">忘記密碼？</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <pre id="result"></pre>
+
+    <script>
+        let isLoginMode = true; // 狀態變數：true 為登入模式，false 為註冊模式
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the form for login mode
+            toggleMode(null, true);
+        });
+
+        // 切換 登入/註冊 模式
+        function toggleMode(e, isInitial = false) {
+            if (e) e.preventDefault();
+            
+            if (!isInitial) {
+                isLoginMode = !isLoginMode;
+            }
+
+            // 更新 UI 文字
+            document.getElementById('formTitle').innerText = isLoginMode ? '歡迎回來' : '帳號註冊';
+            document.getElementById('toggleText').innerText = isLoginMode ? '請登入您的帳戶' : '建立一個新帳戶';
+            document.getElementById('submitBtn').innerText = isLoginMode ? '登入' : '註冊';
+            document.getElementById('switchLink').innerText = isLoginMode ? '點我註冊' : '返回登入';
+
+            // 切換 Email 欄位的顯示狀態
+            const emailGroup = document.getElementById('emailGroup');
+            emailGroup.style.display = isLoginMode ? 'none' : 'block';
+            document.getElementById('email').required = !isLoginMode;
+        }
+
+        // 功能：處理按鈕點擊後的 API 呼叫
+        async function handleSubmit(event) {
+            event.preventDefault();
+
+            // 1. 抓取網頁輸入的值
+            const name = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value; 
+
+            // 2. 基本檢查
+            if (!name || !password) {
+                alert("請填寫帳號與密碼");
+                return;
+            }
+
+            // 3. 設定 API 路徑
+            const apiUrl = isLoginMode ? '/api/Auth/login' : '/api/Auth/register';
+
+            try {
+                // 4. 發送到後端
+                
+                // 根據模式決定要發送的資料
+                const payload = isLoginMode 
+                    ? { name: name, password: password } 
+                    : { name: name, password: password, email: email };
+
+                // 執行非同步 fetch 請求
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    if (isLoginMode) {
+                        // 登入成功 
+                        localStorage.setItem("jwtToken", result.token);
+
+                        // 將 Email 存入快取，供留言板使用，解決 userID 為 null 的問題
+                        // 如果登入時沒輸入 email，則暫時用 name 代替
+                        const storageEmail = email || name;
+                        localStorage.setItem("userEmail", storageEmail);
+
+                        console.log("登入成功，已儲存 Email:", storageEmail);
+                        alert('登入成功！');
+                        window.location.href = "MessageBoard.html";
+                    } else {
+                        // 註冊成功
+                        alert('註冊成功！請直接進行登入');
+                        toggleMode(); // 自動跳回登入模式
+                        // 清空欄位
+                        document.getElementById('username').value = '';
+                        document.getElementById('password').value = '';
+                        document.getElementById('email').value = '';
+                    }
+                } else {
+                    // 顯示後端回傳的失敗訊息 (如：帳號已重複)
+                    alert('失敗：' + (result.message || '驗證失敗'));
+                }
+            } catch (err) {
+                console.error("連線錯誤:", err);
+                alert('無法連線至伺服器，請確保後端專案已啟動。');
+            }
+        }
+    </script>
+    </body>
+</html>
